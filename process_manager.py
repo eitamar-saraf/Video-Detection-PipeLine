@@ -18,12 +18,17 @@ def watchdog(system_messages_queue: Queue, jobs: List[Process]):
     # kill all process
     while True:
         msg = system_messages_queue.get()
-        if isinstance(msg, str) and msg == "Kill_Streamer":
+        if msg == "Kill_Streamer":
             print("[MAIN]: Terminating slacking WORKER")
             kill_process(jobs)
-        if isinstance(msg, str) and msg == "Kill_Detector":
+        elif msg == "Kill_Detector":
             print("[MAIN]: Terminating slacking WORKER")
             kill_process(jobs)
+        elif msg == "Kill_Shower":
+            print("[MAIN]: Terminating slacking WORKER")
+            kill_process(jobs)
+        else:
+            print('New System message')
 
         if len(jobs) == 0:  # watchdog process daemon gets terminated
             system_messages_queue.close()
