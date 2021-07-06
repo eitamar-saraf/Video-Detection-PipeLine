@@ -17,7 +17,7 @@ class Streamer:
                 print("Can't receive frame (stream end?). Exiting ...")
                 self.q.put('NO_MORE_FRAMES')
                 break
-            gray = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
+            gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
             self.q.put(gray)
             if cv.waitKey(1) == ord('q'):
                 break
