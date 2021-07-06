@@ -3,6 +3,7 @@ import argparse
 
 from detector import start_detector
 from process_manager import watchdog
+from shower import start_shower
 from streamer import start_streaming
 
 if __name__ == '__main__':
@@ -11,7 +12,7 @@ if __name__ == '__main__':
     parser.add_argument("--min_area", type=int, default=500, help="Minimum area size")
     args = parser.parse_args()
 
-    process = ['streamer', 'detector', 'show']
+    process = ['streamer', 'detector', 'shower']
     num_of_process = len(process)
 
     frames_queue = Queue()
@@ -28,6 +29,16 @@ if __name__ == '__main__':
             p = Process(target=start_detector,
                         args=(args.min_area, frames_queue, processed_frames_queue, system_messages_queue))
             jobs.append(p)
+
+        elif process[i] == 'shower':
+            p = Process(target=start_shower,
+                        args=(args.video_path, processed_frames_queue, system_messages_queue))
+            jobs.append(p)
+
+        else:
+            print("You added a new process that probably didn't implemented")
+            print('Exit')
+            exit()
 
     for job in jobs:
         job.start()
