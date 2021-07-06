@@ -16,7 +16,7 @@ class Detector:
 
             if isinstance(frame, str) and frame == "NO_MORE_FRAMES":
                 system_messages_queue.put('Kill_Streamer')
-                system_messages_queue.put('Kill_Detector')
+                self.processed_frames_queue.put('NO_MORE_FRAMES')
                 break
 
             if self.first_frame is None:
@@ -35,6 +35,7 @@ class Detector:
             cnts = imutils.grab_contours(cnts)
 
             # loop over the contours
+            all_rect = []
             for c in cnts:
                 # if the contour is too small, ignore it
                 if cv.contourArea(c) < self.min_area:
@@ -42,7 +43,8 @@ class Detector:
                 # compute the bounding box for the contour, draw it on the frame,
                 # and update the text
                 (x, y, w, h) = cv.boundingRect(c)
-                self.processed_frames_queue.put((frame, (x, y, w, h)))
+                all_rect.append((x, y, w, h))
+            self.processed_frames_queue.put((frame, all_rect))
 
 
 def start_detector(min_area: int, frames_queue: Queue, processed_frames_queue: Queue, system_messages_queue: Queue):
