@@ -1,6 +1,7 @@
 import datetime
 from multiprocessing import Queue
 import cv2 as cv
+import numpy as np
 
 
 class Shower:
@@ -11,6 +12,7 @@ class Shower:
         self.fps = int(fps)
         self.wait_time = int(1000 / self.fps)
         self.processed_frames_queue = processed_frames_queue
+        self.kernel = np.ones((7, 7)) / (7*7)
 
     def start(self, system_messages_queue: Queue):
         while True:
@@ -21,7 +23,11 @@ class Shower:
                 break
             frame, rects = proc_frame[0], proc_frame[1]
             for rect in rects:
+                if rect is None:
+                    continue
                 (x, y, w, h) = rect
+                frame[y:y + h, x:x + w] = self.blurring(frame[y:y + h, x:x + w])
+                # frame[x:x + w, y:y + h] = self.blurring(frame[x:x + w, y:y + h])
                 cv.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
             cv.putText(frame, datetime.datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"),
@@ -34,6 +40,10 @@ class Shower:
                 break
             # cleanup the camera and close any open windows
         cv.destroyAllWindows()
+
+    def blurring(self, frame):
+        img = cv.filter2D(src=frame, ddepth=-1, kernel=self.kernel)
+        return img
 
 
 def start_shower(video_path: str, processed_frames_queue: Queue, system_messages_queue: Queue):
