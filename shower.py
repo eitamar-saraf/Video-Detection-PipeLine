@@ -1,3 +1,4 @@
+import datetime
 from multiprocessing import Queue
 import cv2 as cv
 
@@ -23,6 +24,8 @@ class Shower:
                 (x, y, w, h) = rect
                 cv.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
+            cv.putText(frame, datetime.datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"),
+                       (10, 20), cv.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255), 1)
             # show the frame and record if the user presses a key
             cv.imshow("Security Feed", frame)
             cv.waitKey(self.wait_time)
@@ -36,11 +39,3 @@ class Shower:
 def start_shower(video_path: str, processed_frames_queue: Queue, system_messages_queue: Queue):
     shower = Shower(video_path, processed_frames_queue)
     shower.start(system_messages_queue)
-
-# text = "Occupied"
-
-# draw the text and timestamp on the frame
-# cv.putText(frame, "Room Status: {}".format(text), (10, 20), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255),
-#            2)
-# cv.putText(frame, datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"), (10, frame.shape[0] - 10),
-#            cv.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255), 1)
