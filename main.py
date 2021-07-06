@@ -9,7 +9,7 @@ from streamer import start_streaming
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Video Detector Pipeline.')
     parser.add_argument('--video_path', type=str, default='People.mp4', help='Path to video')
-    parser.add_argument("--min_area", type=int, default=500, help="Minimum area size")
+    parser.add_argument("--min_area", type=int, default=500, help="Minimum area size in the detection algorithm")
     args = parser.parse_args()
 
     process = ['streamer', 'detector', 'shower']
